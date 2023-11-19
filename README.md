@@ -6,7 +6,7 @@
 <a href="https://github.com/gomods/athens"><img src="https://img.shields.io/github/go-mod/go-version/gomods/athens.svg" alt="GitHub go.mod Go version of a Go module"></a>
 </p>
 
-Projeto de demonstração de gerenciamento de concorrência ao lidar com leitura e escrita de um arquivo.
+Projeto de demonstração de gerenciamento de concorrência ao ler dados de um array.
 
 ## Iniciando
 
@@ -33,13 +33,16 @@ make demonstrate
 ```
 
 Os casos pré-determinados são:
-1. `n = 5`, `t = 16`, `e = 0`
-2. `n = 5`, `t = 16`, `e = 40`
-3. `n = 5`, `t = 256`, `e = 40`
-4. `n = 7`, `t = 256`, `e = 0`
-5. `n = 7`, `t = 256`, `e = 40`
-
-Os resultados serão salvos na pasta `resultados/`, enquanto os dados remanescentes serão salvos na pasta `data/`.
+1. `n = 5`, `t = 1`
+2. `n = 5`, `t = 4`
+3. `n = 5`, `t = 16`
+4. `n = 5`, `t = 64`
+5. `n = 5`, `t = 256`
+6. `n = 7`, `t = 1`
+7. `n = 7`, `t = 4`
+8. `n = 7`, `t = 16`
+9. `n = 7`, `t = 64`
+10. `n = 7`, `t = 256`
 
 ## Licença
 

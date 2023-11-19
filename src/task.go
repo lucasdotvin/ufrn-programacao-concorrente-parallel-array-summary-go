@@ -3,15 +3,15 @@ package main
 import "math/rand"
 
 type Task struct {
-	id    uint64
-	total uint8
+	id    uint32
 	group uint8
+	total uint8
 }
 
-func newRandomTask(id uint64) *Task {
-	return &Task{
+func newRandomTask(id uint32) Task {
+	return Task{
 		id:    id,
-		total: uint8(rand.Intn(10)),
-		group: uint8(rand.Intn(5)),
+		group: uint8(rand.Intn(5)) + 1,
+		total: uint8(rand.Intn(11)),
 	}
 }

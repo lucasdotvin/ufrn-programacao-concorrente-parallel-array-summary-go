@@ -5,15 +5,12 @@ import (
 	"fmt"
 	"math"
 	"os"
-	"path"
 	"strconv"
 	"time"
 )
 
-const resultsDir = "./resultados"
-
 func parseArgs() (n int, t int, err error) {
-	if len(os.Args) != 4 {
+	if len(os.Args) != 3 {
 		return 0, 0, errors.New("expected exactly 2 arguments")
 	}
 
@@ -34,15 +31,10 @@ func parseArgs() (n int, t int, err error) {
 	return n, t, nil
 }
 
-func worker(id int, tasks <-chan *Task, results chan<- *Result) {
-	r := &Result{
-		totalSum:                        0,
-		grouppedTotalSum:                newGroupTotalSum(),
-		tasksWithTotalLesserThan5Count:  0,
-		tasksWithTotalGreaterThan5Count: 0,
-	}
+func worker(tasks []Task, results chan<- *Result) {
+	r := newResult()
 
-	for t := range tasks {
+	for _, t := range tasks {
 		r.totalSum += uint64(t.total)
 		r.grouppedTotalSum[t.group] += uint64(t.total)
 
@@ -56,6 +48,25 @@ func worker(id int, tasks <-chan *Task, results chan<- *Result) {
 	results <- r
 }
 
+func chunkTasks(tasks []Task, chunksCount int) [][]Task {
+	tasksCount := len(tasks)
+	chunkSize := tasksCount / chunksCount
+	chunks := make([][]Task, chunksCount)
+
+	for i := 0; i < chunksCount; i++ {
+		start := i * chunkSize
+		end := start + chunkSize
+
+		if i == chunksCount-1 {
+			end = tasksCount
+		}
+
+		chunks[i] = tasks[start:end]
+	}
+
+	return chunks
+}
+
 func main() {
 	n, t, err := parseArgs()
 
@@ -63,31 +74,60 @@ func main() {
 		panic(err)
 	}
 
-	executionTimestamp := time.Now().Format("2006-01-02T15-04-05")
-
-	resultsFilePath := path.Join(resultsDir, executionTimestamp)
-	resultsFile, err := os.OpenFile(resultsFilePath, os.O_CREATE|os.O_WRONLY, 0644)
-
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Fprintf(resultsFile, "n: %d, t: %d\n", n, t)
+	fmt.Println("Parâmetros recebidos:")
+	fmt.Printf("n: %d, t: %d: %d\n", n, t)
 
-	tasksCount := uint64(math.Pow10(n))
-	tasks := make([]*Task, tasksCount)
+	tasksCount := uint32(math.Pow10(n))
+	tasks := make([]Task, tasksCount)
 
-	for i := uint64(0); i < tasksCount; i++ {
+	for i := uint32(0); i < tasksCount; i++ {
 		tasks[i] = newRandomTask(i)
 	}
 
+	fmt.Printf("Total de tarefas: %d\n", tasksCount)
+	fmt.Println("")
+
 	processingStart := time.Now()
+
+	results := make(chan *Result, t)
+	chunks := chunkTasks(tasks, t)
+
+	fmt.Println("Iniciando workers...")
+
+	for i := 0; i < t; i++ {
+		go worker(chunks[i], results)
+	}
+
+	fmt.Println("Workers iniciados")
+	fmt.Println("")
+	fmt.Println("Aguardando resultados...")
+
+	r := newResult()
+
+	for i := 0; i < t; i++ {
+		r.merge(<-results)
+	}
 
 	processingDuration := time.Since(processingStart)
 
-	fmt.Fprintf(resultsFile, "processing duration: %s\n", processingDuration)
+	fmt.Println("Resultados recebidos")
+	fmt.Println("")
 
-	if err := resultsFile.Close(); err != nil {
-		panic(err)
+	fmt.Printf("Soma total: %d\n", r.totalSum)
+	fmt.Printf("Tarefas com total menor do que 5: %d\n", r.tasksWithTotalLesserThan5Count)
+	fmt.Printf("Tarefas com total maior ou igual a 5: %d\n", r.tasksWithTotalGreaterThan5Count)
+
+	fmt.Printf("Soma por grupo: %d\n", r.totalSum)
+
+	for g := 1; g < 6; g++ {
+		fmt.Printf("Grupo %d: %d\n", g, r.grouppedTotalSum[uint8(g)])
 	}
+
+	fmt.Println("")
+
+	fmt.Printf("Tempo de processamento total: %s\n", processingDuration)
 }
