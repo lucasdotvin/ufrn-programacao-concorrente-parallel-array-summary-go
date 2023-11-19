@@ -1,5 +1,5 @@
 Parâmetros recebidos:
-n: 7, t: 4: %!d(MISSING)
+n: 7, t: 4
 Total de tarefas: 10000000
 
 Iniciando workers...
@@ -8,14 +8,14 @@ Workers iniciados
 Aguardando resultados...
 Resultados recebidos
 
-Soma total: 49997229
-Tarefas com total menor do que 5: 4545212
-Tarefas com total maior ou igual a 5: 5454788
-Soma por grupo: 49997229
-Grupo 1: 9996745
-Grupo 2: 10005124
-Grupo 3: 9987016
-Grupo 4: 10002827
-Grupo 5: 10005517
+Soma total: 49994510
+Tarefas com total menor do que 5: 4545899
+Tarefas com total maior ou igual a 5: 5454101
+Soma por grupo:
+	Grupo 1: 10009984
+	Grupo 2: 9993499
+	Grupo 3: 9984210
+	Grupo 4: 10005372
+	Grupo 5: 10001445
 
-Tempo de processamento total: 121.568656ms
+Tempo de processamento total: 101.503896ms

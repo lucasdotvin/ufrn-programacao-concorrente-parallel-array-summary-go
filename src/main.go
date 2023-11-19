@@ -79,7 +79,7 @@ func main() {
 	}
 
 	fmt.Println("Parâmetros recebidos:")
-	fmt.Printf("n: %d, t: %d: %d\n", n, t)
+	fmt.Printf("n: %d, t: %d\n", n, t)
 
 	tasksCount := uint32(math.Pow10(n))
 	tasks := make([]Task, tasksCount)
@@ -121,10 +121,10 @@ func main() {
 	fmt.Printf("Tarefas com total menor do que 5: %d\n", r.tasksWithTotalLesserThan5Count)
 	fmt.Printf("Tarefas com total maior ou igual a 5: %d\n", r.tasksWithTotalGreaterThan5Count)
 
-	fmt.Printf("Soma por grupo: %d\n", r.totalSum)
+	fmt.Println("Soma por grupo:")
 
 	for g := 1; g < 6; g++ {
-		fmt.Printf("Grupo %d: %d\n", g, r.grouppedTotalSum[uint8(g)])
+		fmt.Printf("\tGrupo %d: %d\n", g, r.grouppedTotalSum[uint8(g)])
 	}
 
 	fmt.Println("")
