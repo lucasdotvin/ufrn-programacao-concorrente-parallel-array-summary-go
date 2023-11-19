@@ -31,10 +31,10 @@ func parseArgs() (n int, t int, err error) {
 	return n, t, nil
 }
 
-func worker(tasks []Task, results chan<- *Result) {
+func worker(tasks []Task, chunkStart int, chunkEnd int, results chan<- *Result) {
 	r := newResult()
 
-	for _, t := range tasks {
+	for _, t := range tasks[chunkStart:chunkEnd] {
 		r.totalSum += uint64(t.total)
 		r.grouppedTotalSum[t.group] += uint64(t.total)
 
@@ -46,25 +46,6 @@ func worker(tasks []Task, results chan<- *Result) {
 	}
 
 	results <- r
-}
-
-func chunkTasks(tasks []Task, chunksCount int) [][]Task {
-	tasksCount := len(tasks)
-	chunkSize := tasksCount / chunksCount
-	chunks := make([][]Task, chunksCount)
-
-	for i := 0; i < chunksCount; i++ {
-		start := i * chunkSize
-		end := start + chunkSize
-
-		if i == chunksCount-1 {
-			end = tasksCount
-		}
-
-		chunks[i] = tasks[start:end]
-	}
-
-	return chunks
 }
 
 func main() {
@@ -94,12 +75,15 @@ func main() {
 	processingStart := time.Now()
 
 	results := make(chan *Result, t)
-	chunks := chunkTasks(tasks, t)
+	chunkSize := int(tasksCount / uint32(t))
 
 	fmt.Println("Iniciando workers...")
 
 	for i := 0; i < t; i++ {
-		go worker(chunks[i], results)
+		chunkStart := i * chunkSize
+		chunkEnd := chunkStart + chunkSize
+
+		go worker(tasks, chunkStart, chunkEnd, results)
 	}
 
 	fmt.Println("Workers iniciados")
