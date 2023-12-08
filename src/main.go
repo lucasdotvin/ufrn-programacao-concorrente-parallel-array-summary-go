@@ -35,10 +35,10 @@ func worker(tasks []Task, chunkStart int, chunkEnd int, results chan<- *Result) 
 	r := newResult()
 
 	for _, t := range tasks[chunkStart:chunkEnd] {
-		r.totalSum += uint64(t.total)
-		r.grouppedTotalSum[t.group] += uint64(t.total)
+		r.totalSum += uint64(t.total())
+		r.grouppedTotalSum[t.group()] += uint64(t.total())
 
-		if t.total < 5 {
+		if t.total() < 5 {
 			r.tasksWithTotalLesserThan5Count++
 		} else {
 			r.tasksWithTotalGreaterThan5Count++
